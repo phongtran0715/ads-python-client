@@ -1,13 +1,13 @@
 import socket
 import json
 import os.path
+from configparser import ConfigParser
 
 
 ADS_COMMANDS = [
     ("projectWiz", "ADS Workbench new project wizard"),
     ("project", "ADS Workbench new project with name eg: project 'prj name'"),
-    ("runMultiple", "ADS Workbench Run Multiple  eg: runMultiple run-multiple-case1.json"),
-    ("runAll", "Run all unit test cases")
+    ("runMultiple", "ADS Workbench Run Multiple  eg: runMultiple run-multiple-case1.json")
 ]
 
 
@@ -44,17 +44,18 @@ def send_cmd(cmd):
         else:
             print("[ERROR] Json input file is required")
             return
-    elif cmd[0] == 'runAll':
-
     else:
         ads_commad = ''
 
-    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
-        s.connect((ADS_HOST, int(ADS_PORT)))
-        print("[INFO] >>> Sending command: {}".format(ads_commad))
-        s.sendall(str.encode("{}\n".format(ads_commad)))
-        data = s.recv(1024)
-        print("[INFO] <<< Server response: {}".format(data))
+    try:
+        with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+            s.connect((ADS_HOST, int(ADS_PORT)))
+            print("[INFO] >>> Sending command: {}".format(ads_commad))
+            s.sendall(str.encode("{}\n".format(ads_commad)))
+            data = s.recv(1024)
+            print("[INFO] <<< Server response: {}".format(data))
+    except Exception as ex:
+        print("[ERROR] Can not connect to server - {}".format(ex))
 
 if __name__ == '__main__':
     # init parse config file
