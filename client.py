@@ -5,8 +5,12 @@ from configparser import ConfigParser
 
 
 ADS_COMMANDS = [
-    ("projectWiz", "ADS Workbench new project wizard"),
     ("project", "ADS Workbench new project with name eg: project 'prj name'"),
+    ("projectWiz", "ADS Workbench new project wizard"),
+    ("initRestartWiz", "Initialize restart wizard"),
+    ("addToExecutionQueue", "Add to execution queue"),
+    ("advChartPlotDump", "Advance Chart Plot Dump"),
+    ("checkQueueStatus", "Check Queue Status"),
     ("runMultiple", "ADS Workbench Run Multiple  eg: runMultiple run-multiple-case1.json")
 ]
 
@@ -31,12 +35,19 @@ def send_cmd(cmd):
         ads_commad = "NewProj{name=%s}" % params if params else "NewProj{}"
     elif cmd[0] == 'projectWiz':
         ads_commad = "NewProjWiz{%s}" % params if params else "NewProjWiz{}"
+    elif cmd[0] == 'initRestartWiz':
+        ads_commad = "InitializeRestartWiz{%s}" % params if params else "InitializeRestartWiz{}"
+    elif cmd[0] == 'addToExecutionQueue':
+        ads_commad = "AddToExecutionQueue{%s}" % params if params else "AddToExecutionQueue{}"
+    elif cmd[0] == 'advChartPlotDump':
+        ads_commad = "AdvChartPlotDump{%s}" % params if params else "AdvChartPlotDump{}"
+    elif cmd[0] == 'checkQueueStatus':
+        ads_commad = "CheckQueueStatus{%s}" % params if params else "CheckQueueStatus{}"
     elif cmd[0] == 'runMultiple':
         if params:
             if os.path.isfile(params):
                 f = open(params)
                 data = json.dumps(json.load(f))
-                print(data)
                 ads_commad = "RunMultiple%s" % data
             else:
                 print("[ERROR] Json input file not found.")
