@@ -2,8 +2,8 @@
    "checkFoil":true,
    "checkWand":true,
    "checkLeo":true,
-   "path":"C:\\Users\\Admin\\ADS_Workspace\\Samples",
+   "path":"/home/jack/ADS_Workspace/Samples/",
    "data":[
-      "C:/Users/Admin/ADS_Workspace/Samples/Row1X"
+      "/home/jack/ADS_Workspace/Samples/VKI-Vane2D/"
    ]
 }

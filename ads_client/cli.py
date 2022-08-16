@@ -1,5 +1,7 @@
 """This module provides the RP To-Do CLI."""
 
+import json
+import os
 from pathlib import Path
 from typing import List, Optional
 
@@ -59,8 +61,8 @@ def run_multiple(
 ) -> None:
     """Run project"""
     if file:
-        if os.path.isfile(params):
-            f = open(params)
+        if os.path.isfile(file):
+            f = open(file)
             cmd_content = json.dumps(json.load(f))
     else:
         if not path:
@@ -71,8 +73,8 @@ def run_multiple(
             raise typer.Abort()
         cmd_content = {
             "checkFoil": check_foil if check_foil else True,
-            "checkWand": check_wand if check_wand else True
-            "checkLeo": check_leo if check_leo else True
+            "checkWand": check_wand if check_wand else True,
+            "checkLeo": check_leo if check_leo else True,
             "path": path,
             "data": [data]
         }
@@ -137,7 +139,7 @@ def plot_add(
         None, "--caseFilePath", help="Path to execution project"),
     xValue: str = typer.Option(None, "--xValue"),
     yValue: str = typer.Option(None, "--yValue"),
-    xValue: str = typer.Option(None, "--xValue"),
+    ryValue: str = typer.Option(None, "--ryValue"),
     saveAs: str = typer.Option(None, "--saveAs"),
     file: Optional[Path] = typer.Option(
         None, help="Load configuration from json file")
@@ -154,7 +156,8 @@ def plot_add(
             "chartType": chartType,
             "filePaths": filePaths,
             "xValue": xValue,
-            "xValue": xValue,
+            "yValue": yValue,
+            "ryValue": ryValue,
             "saveAs": saveAs
         }
     ads_command = "AdvChartPlotDump{%s}" % param if param else "AdvChartPlotDump{}"
