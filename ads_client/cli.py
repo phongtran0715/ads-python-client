@@ -14,16 +14,18 @@ app.add_typer(project_app, name="project", help="Project management")
 queue_app = typer.Typer()
 app.add_typer(queue_app, name="queue", help="Queue management")
 
+plot_app = typer.Typer()
+app.add_typer(plot_app, name="plot", help="Plot ADS chart")
+
 
 @project_app.command(name="create")
 def create_prj(
     name: str,
-    param: str = typer.Option(None, "--param", "-p")
 ) -> None:
     """Create a new project with name"""
 
-    ads_commad = "NewProj{name=%s}" % name if name else "NewProj{}"
-    return ads.AdsCommand().send_cmd(ads_commad)
+    ads_command = "NewProj{name=%s}" % name if name else "NewProj{}"
+    return ads.AdsCommand().send_cmd(ads_command)
 
 
 @project_app.command(name="create_wizard")
@@ -32,41 +34,132 @@ def create_prj_wiz(
 ) -> None:
     """Open new project wizard"""
 
-    ads_commad = "NewProjWiz{%s}" % param if param else "NewProjWiz{}"
-    return ads.AdsCommand().send_cmd(ads_commad)
+    ads_command = "NewProjWiz{%s}" % param if param else "NewProjWiz{}"
+    return ads.AdsCommand().send_cmd(ads_command)
 
 
 @project_app.command(name="list")
 def list_prj(
-    param: str = typer.Option(None, "--param", "-p")
 ) -> None:
     """List all projects."""
 
-    ads_commad = "ProjList{%s}" % param if param else "ProjList{}"
-    return ads.AdsCommand().send_cmd(ads_commad)
+    ads_command = "ListProj{}"
+    return ads.AdsCommand().send_cmd(ads_command)
 
 
-@project_app.command(name="run")
-def run_prj(
-    name: str,
-    param: str = typer.Option(None, "--param", "-p")
+@project_app.command(name="run_multiple")
+def run_multiple(
+    check_foil: str = typer.Option(True, "--check_foil", help="Enable foil"),
+    check_wand: str = typer.Option(True, "--check_wand", help="Enable wand"),
+    check_leo: str = typer.Option(True, "--check_leo", help="Enable leo"),
+    path: str = typer.Option(None, "--path", help="Path to execution project"),
+    data: str = typer.Option(None, "--data", help="Path to case data"),
+    file: Optional[Path] = typer.Option(
+        None, help="Load configuration from json file")
 ) -> None:
     """Run project"""
-
-    ads_commad = "ProjRun{%s}" % name if name else "ProjRun{}"
-    return ads.AdsCommand().send_cmd(ads_commad)
+    if file:
+        if os.path.isfile(params):
+            f = open(params)
+            cmd_content = json.dumps(json.load(f))
+    else:
+        if not path:
+            typer.secho("path can not be null", fg=typer.colors.RED)
+            raise typer.Abort()
+        if not data:
+            typer.secho("data can not be null", fg=typer.colors.RED)
+            raise typer.Abort()
+        cmd_content = {
+            "checkFoil": check_foil if check_foil else True,
+            "checkWand": check_wand if check_wand else True
+            "checkLeo": check_leo if check_leo else True
+            "path": path,
+            "data": [data]
+        }
+    ads_command = "RunMultiple%s" % cmd_content
+    return ads.AdsCommand().send_cmd(ads_command)
 
 
 # =================== QUEUE ===================
 @queue_app.command(name="status")
 def queue_status(
-    param: str = typer.Option(None, "--param", "-p")
+    path: str = typer.Option(None, "--path", help="Path to execution project"),
 ) -> None:
     """Check queue status"""
+    if path:
+        cmd_content = {
+            "path": path
+        }
+        ads_command = "CheckQueueStatus{%s}" % cmd_content
+    else:
+        ads_command = "CheckQueueStatus{}"
+    return ads.AdsCommand().send_cmd(ads_command)
 
-    ads_commad = "CheckQueueStatus{%s}" % param if param else "CheckQueueStatus{}"
-    return ads.AdsCommand().send_cmd(ads_commad)
+
+@queue_app.command(name="add")
+def queue_add(
+    caseFilePath: str = typer.Option(
+        None, "--caseFilePath", help="Path to execution project"),
+    runNext: str = typer.Option(None, "--runNext", help="Run next"),
+    runNextParam: str = typer.Option(None, "--runNextParam", help="Run next"),
+    queue: str = typer.Option(None, "--queue", help="Queue"),
+    cpuCount: str = typer.Option(None, "--cpuCount", help="CPU count"),
+    elementCount: str = typer.Option(
+        None, "--elementCount", help="Element count"),
+    file: Optional[Path] = typer.Option(
+        None, help="Load configuration from json file")
+) -> None:
+    """Add job to queue"""
+    cmd_content = ""
+    if file:
+        if os.path.isfile(params):
+            f = open(params)
+            cmd_content = json.dumps(json.load(f))
+    else:
+        cmd_content = {
+            "caseFilePath": caseFilePath,
+            "runNext": runNext,
+            "runNextParam": runNextParam,
+            "queue": queue,
+            "cpuCount": cpuCount,
+            "elementCount": elementCount,
+        }
+    ads_command = "RunMultiple%s" % cmd_content
+    return ads.AdsCommand().send_cmd(ads_command)
 # =================== END QUEUE ===================
+
+
+# =================== PLOT ===================
+@plot_app.command(name="add")
+def plot_add(
+    chartType: bool = typer.Option(True),
+    filePaths: str = typer.Option(
+        None, "--caseFilePath", help="Path to execution project"),
+    xValue: str = typer.Option(None, "--xValue"),
+    yValue: str = typer.Option(None, "--yValue"),
+    xValue: str = typer.Option(None, "--xValue"),
+    saveAs: str = typer.Option(None, "--saveAs"),
+    file: Optional[Path] = typer.Option(
+        None, help="Load configuration from json file")
+) -> None:
+    """Display the .LOAD file in the advanced charting display"""
+
+    cmd_content = ""
+    if file:
+        if os.path.isfile(params):
+            f = open(params)
+            cmd_content = json.dumps(json.load(f))
+    else:
+        cmd_content = {
+            "chartType": chartType,
+            "filePaths": filePaths,
+            "xValue": xValue,
+            "xValue": xValue,
+            "saveAs": saveAs
+        }
+    ads_command = "AdvChartPlotDump{%s}" % param if param else "AdvChartPlotDump{}"
+    return ads.AdsCommand().send_cmd(ads_command)
+# =================== END PLOT ===================
 
 
 def _version_callback(value: bool) -> None:
