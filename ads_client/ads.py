@@ -22,8 +22,12 @@ class AdsCommand:
                 s.sendall(str.encode("{}\n".format(ads_commad)))
                 data = s.recv(1024).decode("utf-8").strip()
                 if data and len(data) > 0:
-                    typer.secho("{}".format(
-                        data), fg=typer.colors.WHITE)
+                    if data.startswith('Error!'):
+                        typer.secho("{}".format(
+                            data), fg=typer.colors.RED)
+                    else:
+                        typer.secho("{}".format(
+                            data), fg=typer.colors.GREEN)
                 return True
         except Exception as ex:
             typer.secho("Can not connect to server: {}".format(

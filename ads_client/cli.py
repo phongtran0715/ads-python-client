@@ -84,21 +84,23 @@ def run_multiple(
 
 @project_app.command(name="cp")
 def copy_project(
-    path: List[str],
-    project_path: str
+    sources: List[str],
+    dest: str
 ) -> None:
     """
-    Copy SOURCE to PROJECT, or multiple SOURCE(s) to PROJECT.
+    Copy SOURCE to DEST, or multiple SOURCE(s) to DEST.
     """
 
     cmd_content = {
-        "sourcePath": list(path),
-        "projectPath": project_path
+        "sourcePath": list(sources),
+        "destPath": dest
     }
     ads_command = "CopySource%s" % cmd_content
     return ads.AdsCommand().send_cmd(ads_command)
 
 # =================== QUEUE ===================
+
+
 @queue_app.command(name="status")
 def queue_status(
     path: str = typer.Option(None, "--path", help="Path to execution project"),
