@@ -51,15 +51,16 @@ def list_prj(
 
 @project_app.command(name="run_multiple")
 def run_multiple(
-    check_foil: str = typer.Option(True, "--check_foil", help="Enable foil"),
-    check_wand: str = typer.Option(True, "--check_wand", help="Enable wand"),
-    check_leo: str = typer.Option(True, "--check_leo", help="Enable leo"),
-    path: str = typer.Argument(..., help="Path to excution project"),
+    check_foil: bool  = typer.Option(True, "--check_foil", help="Enable foil"),
+    check_wand: bool  = typer.Option(True, "--check_wand", help="Enable wand"),
+    check_leo: bool  = typer.Option(True, "--check_leo", help="Enable leo"),
+    path: str = typer.Option(None, "--path", help="Path to excution project"),
     data: Optional[List[str]] = typer.Option(None, "--data", help="Path to case data"),
     file: Optional[Path] = typer.Option(
         None, help="Load configuration from json file")
 ) -> None:
     """Run project"""
+    cmd_content = {}
     if file:
         if os.path.isfile(file):
             f = open(file)
@@ -70,7 +71,7 @@ def run_multiple(
             "checkWand": check_wand if check_wand else True,
             "checkLeo": check_leo if check_leo else True,
             "path": path,
-            "data": [data]
+            "data": list(data)
         }
     ads_command = "RunMultiple%s" % cmd_content
     return ads.AdsCommand().send_cmd(ads_command)
