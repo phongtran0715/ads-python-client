@@ -54,8 +54,8 @@ def run_multiple(
     check_foil: str = typer.Option(True, "--check_foil", help="Enable foil"),
     check_wand: str = typer.Option(True, "--check_wand", help="Enable wand"),
     check_leo: str = typer.Option(True, "--check_leo", help="Enable leo"),
-    path: str = typer.Option(None, "--path", help="Path to execution project"),
-    data: str = typer.Option(None, "--data", help="Path to case data"),
+    path: str = typer.Argument(..., help="Path to excution project"),
+    data: Optional[List[str]] = typer.Option(None, "--data", help="Path to case data"),
     file: Optional[Path] = typer.Option(
         None, help="Load configuration from json file")
 ) -> None:
@@ -65,12 +65,6 @@ def run_multiple(
             f = open(file)
             cmd_content = json.dumps(json.load(f))
     else:
-        if not path:
-            typer.secho("path can not be null", fg=typer.colors.RED)
-            raise typer.Abort()
-        if not data:
-            typer.secho("data can not be null", fg=typer.colors.RED)
-            raise typer.Abort()
         cmd_content = {
             "checkFoil": check_foil if check_foil else True,
             "checkWand": check_wand if check_wand else True,
@@ -82,7 +76,7 @@ def run_multiple(
     return ads.AdsCommand().send_cmd(ads_command)
 
 
-@project_app.command(name="cp")
+@app.command(name="cp")
 def copy_project(
     sources: List[str],
     dest: str
@@ -110,7 +104,7 @@ def queue_status(
         cmd_content = {
             "path": path
         }
-        ads_command = "CheckQueueStatus{%s}" % cmd_content
+        ads_command = "CheckQueueStatus%s" % cmd_content
     else:
         ads_command = "CheckQueueStatus{}"
     return ads.AdsCommand().send_cmd(ads_command)
@@ -144,7 +138,7 @@ def queue_add(
             "cpuCount": cpuCount,
             "elementCount": elementCount,
         }
-    ads_command = "RunMultiple%s" % cmd_content
+    ads_command = "AddToExecutionQueue%s" % cmd_content
     return ads.AdsCommand().send_cmd(ads_command)
 # =================== END QUEUE ===================
 

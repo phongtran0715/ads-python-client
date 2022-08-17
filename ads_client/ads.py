@@ -30,6 +30,6 @@ class AdsCommand:
                             data), fg=typer.colors.GREEN)
                 return True
         except Exception as ex:
-            typer.secho("Can not connect to server: {}".format(
+            typer.secho("Error! Can not connect to server: {}".format(
                 ex), fg=typer.colors.RED)
             return False
