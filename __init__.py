@@ -1,31 +1,19 @@
 import os
 import pathlib
 from configparser import ConfigParser
+from pathlib import Path
 
 import typer
 
 __app_name__ = "ads_python_client"
 __version__ = "0.0.1"
 
-(
-    SUCCESS,
-    DIR_ERROR,
-    FILE_ERROR,
-    DB_READ_ERROR,
-    DB_WRITE_ERROR,
-    JSON_ERROR,
-    ID_ERROR,
-) = range(7)
-
-ERRORS = {
-
-}
-
-
 # parse configuration file
+ADS_HOST = "127.0.0.1"
+ADS_PORT = "2008"
+
 try:
-    config_file = os.path.join(pathlib.Path(
-        __file__).parent.resolve(), 'app.conf')
+    config_file = "app.conf"
     parser = ConfigParser()
     with open(config_file) as f:
         parser.read(config_file)

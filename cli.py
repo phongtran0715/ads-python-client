@@ -2,12 +2,16 @@
 
 import json
 import os
+from enum import Enum
 from pathlib import Path
 from typing import List, Optional
 
 import typer
 
-from . import ERRORS, __app_name__, __version__, ads
+from ads import AdsCommand
+
+__app_name__ = "ads_python_client"
+__version__ = "0.0.1"
 
 app = typer.Typer()
 project_app = typer.Typer()
@@ -20,6 +24,13 @@ plot_app = typer.Typer()
 app.add_typer(plot_app, name="plot", help="Plot ADS chart")
 
 
+class ExampleProject(str, Enum):
+    vki_vane = "vki-vane"
+    row_1x = "row_1x"
+    row_2x = "row_2x"
+    row_3x = "row_3x"
+
+
 @project_app.command(name="create")
 def create_prj(
     name: str,
@@ -27,7 +38,7 @@ def create_prj(
     """Create a new project with name"""
 
     ads_command = "NewProj{name=%s}" % name if name else "NewProj{}"
-    return ads.AdsCommand().send_cmd(ads_command)
+    return AdsCommand().send_cmd(ads_command)
 
 
 @project_app.command(name="create_wizard")
@@ -37,7 +48,7 @@ def create_prj_wiz(
     """Open new project wizard"""
 
     ads_command = "NewProjWiz{%s}" % param if param else "NewProjWiz{}"
-    return ads.AdsCommand().send_cmd(ads_command)
+    return AdsCommand().send_cmd(ads_command)
 
 
 @project_app.command(name="list")
@@ -46,16 +57,17 @@ def list_prj(
     """List all projects."""
 
     ads_command = "ListProj{}"
-    return ads.AdsCommand().send_cmd(ads_command)
+    return AdsCommand().send_cmd(ads_command)
 
 
 @project_app.command(name="run_multiple")
 def run_multiple(
-    check_foil: bool  = typer.Option(True, "--check_foil", help="Enable foil"),
-    check_wand: bool  = typer.Option(True, "--check_wand", help="Enable wand"),
-    check_leo: bool  = typer.Option(True, "--check_leo", help="Enable leo"),
+    check_foil: bool = typer.Option(True, "--check_foil", help="Enable foil"),
+    check_wand: bool = typer.Option(True, "--check_wand", help="Enable wand"),
+    check_leo: bool = typer.Option(True, "--check_leo", help="Enable leo"),
     path: str = typer.Option(None, "--path", help="Path to excution project"),
-    data: Optional[List[str]] = typer.Option(None, "--data", help="Path to case data"),
+    data: Optional[List[str]] = typer.Option(
+        None, "--data", help="Path to case data"),
     file: Optional[Path] = typer.Option(
         None, help="Load configuration from json file")
 ) -> None:
@@ -65,6 +77,11 @@ def run_multiple(
         if os.path.isfile(file):
             f = open(file)
             cmd_content = json.dumps(json.load(f))
+        else:
+            typer.secho("Error! Input file does not exist.",
+                        fg=typer.colors.RED)
+            return
+
     else:
         cmd_content = {
             "checkFoil": check_foil if check_foil else True,
@@ -74,7 +91,19 @@ def run_multiple(
             "data": list(data)
         }
     ads_command = "RunMultiple%s" % cmd_content
-    return ads.AdsCommand().send_cmd(ads_command)
+    return AdsCommand().send_cmd(ads_command)
+
+
+@project_app.command(name="run_example")
+def run_example(
+    example: ExampleProject = ExampleProject.vki_vane
+) -> None:
+    """Run example project"""
+    cmd_content = {
+        'type': example.value
+    }
+    ads_command = "RunExample%s" % cmd_content
+    return AdsCommand().send_cmd(ads_command)
 
 
 @app.command(name="cp")
@@ -91,7 +120,7 @@ def copy_project(
         "destPath": dest
     }
     ads_command = "CopySource%s" % cmd_content
-    return ads.AdsCommand().send_cmd(ads_command)
+    return AdsCommand().send_cmd(ads_command)
 
 # =================== QUEUE ===================
 
@@ -108,7 +137,7 @@ def queue_status(
         ads_command = "CheckQueueStatus%s" % cmd_content
     else:
         ads_command = "CheckQueueStatus{}"
-    return ads.AdsCommand().send_cmd(ads_command)
+    return AdsCommand().send_cmd(ads_command)
 
 
 @queue_app.command(name="add")
@@ -140,7 +169,7 @@ def queue_add(
             "elementCount": elementCount,
         }
     ads_command = "AddToExecutionQueue%s" % cmd_content
-    return ads.AdsCommand().send_cmd(ads_command)
+    return AdsCommand().send_cmd(ads_command)
 # =================== END QUEUE ===================
 
 
@@ -174,7 +203,7 @@ def plot_add(
             "saveAs": saveAs
         }
     ads_command = "AdvChartPlotDump{%s}" % param if param else "AdvChartPlotDump{}"
-    return ads.AdsCommand().send_cmd(ads_command)
+    return AdsCommand().send_cmd(ads_command)
 # =================== END PLOT ===================
 
 
@@ -196,3 +225,7 @@ def main(
     )
 ) -> None:
     return
+
+
+if __name__ == "__main__":
+    app()

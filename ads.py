@@ -7,7 +7,7 @@ from pathlib import Path
 
 import typer
 
-from . import ADS_HOST, ADS_PORT
+from __init__ import ADS_HOST, ADS_PORT
 
 
 class AdsCommand:
