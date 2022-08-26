@@ -106,21 +106,18 @@ def run_example(
     return AdsCommand().send_cmd(ads_command)
 
 
-@app.command(name="cp")
-def copy_project(
-    sources: List[str],
-    dest: str
+@project_app.command(name="delete")
+def delete_project(
+    name: str,
 ) -> None:
     """
-    Copy SOURCE to DEST, or multiple SOURCE(s) to DEST.
+    Delete a project by name
     """
 
-    cmd_content = {
-        "sourcePath": list(sources),
-        "destPath": dest
-    }
-    ads_command = "CopySource%s" % cmd_content
+    ads_command = "DeleteProj{name=%s}" % name if name else "DeleteProj{}"
     return AdsCommand().send_cmd(ads_command)
+
+# =================== END PROJECT ===================
 
 # =================== QUEUE ===================
 
@@ -171,7 +168,6 @@ def queue_add(
     ads_command = "AddToExecutionQueue%s" % cmd_content
     return AdsCommand().send_cmd(ads_command)
 # =================== END QUEUE ===================
-
 
 # =================== PLOT ===================
 @plot_app.command(name="add")
