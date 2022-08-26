@@ -113,8 +113,11 @@ def delete_project(
     """
     Delete a project by name
     """
-
-    ads_command = "DeleteProj{name=%s}" % name if name else "DeleteProj{}"
+    delete = typer.confirm("Are you sure you want to delete it?")
+    if delete:
+        ads_command = "DeleteProj{name=%s}" % name if name else "DeleteProj{}"
+    else:
+        raise typer.Abort()
     return AdsCommand().send_cmd(ads_command)
 
 # =================== END PROJECT ===================
