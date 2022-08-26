@@ -25,10 +25,12 @@ app.add_typer(plot_app, name="plot", help="Plot ADS chart")
 
 
 class ExampleProject(str, Enum):
-    vki_vane = "vki-vane"
-    row_1x = "row_1x"
-    row_2x = "row_2x"
-    row_3x = "row_3x"
+    vki_vane = "VKI-Vane2D"
+    row_1x = "Row1X"
+    row_2x = "Row2X"
+    row_3x = "Row3X"
+    row_3x_steady = "3RowSteadyParallel"
+    row_3x_time_accurate = "3RowTimeAccurate"
 
 
 @project_app.command(name="create")
@@ -96,11 +98,11 @@ def run_multiple(
 
 @project_app.command(name="run_example")
 def run_example(
-    example: ExampleProject = ExampleProject.vki_vane
+    case: ExampleProject = ExampleProject.vki_vane
 ) -> None:
     """Run example project"""
     cmd_content = {
-        'type': example.value
+        'caseId': case.value
     }
     ads_command = "RunExample%s" % cmd_content
     return AdsCommand().send_cmd(ads_command)
