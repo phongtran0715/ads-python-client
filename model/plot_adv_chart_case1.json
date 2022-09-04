@@ -1,8 +1,8 @@
 {
-    "chartType": "",
-    "filePaths": "",
-    "xValue": "",
-    "yValue": "",
+    "chartType": ".load",
+    "filePaths": ["/home/jack/ADS_Workspace/Samples/VKI-Vane2D/VKI-Vane2D.LOAD"],
+    "xValue": "X",
+    "yValue": "PS/PT",
     "ryValue": "",
     "saveAs": ""
 }

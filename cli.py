@@ -191,8 +191,8 @@ def plot_add(
 
     cmd_content = ""
     if file:
-        if os.path.isfile(params):
-            f = open(params)
+        if os.path.isfile(file):
+            f = open(file)
             cmd_content = json.dumps(json.load(f))
     else:
         cmd_content = {
@@ -203,7 +203,8 @@ def plot_add(
             "ryValue": ryValue,
             "saveAs": saveAs
         }
-    ads_command = "AdvChartPlotDump{%s}" % param if param else "AdvChartPlotDump{}"
+
+    ads_command = "AdvChartPlotDump%s" % cmd_content
     return AdsCommand().send_cmd(ads_command)
 # =================== END PLOT ===================
 

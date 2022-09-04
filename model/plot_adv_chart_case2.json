@@ -1,0 +1,18 @@
+{
+    //{".csv", ".load", ".forces", ".meanvalue", ".mixedavg", ".overall"}
+    "chartType": ".load",
+
+    "filePaths": "/home/jack/ADS_Workspace/Samples/VKI-Vane2D/VKI-Vane2D.LOAD",
+
+    //{ "X", "Y", "Z", "RTHETA", "R", "S", "PS", "PS/PT", "Cp", "M-Isen", "Twall", "Tadb", "Cf", "Stn", "Htc", "Yplus", "HFLUX" }
+    "xValue": "X",
+
+    //{ "X", "Y", "Z", "RTHETA", "R", "S", "PS", "PS/PT", "Cp", "M-Isen", "Twall", "Tadb", "Cf", "Stn", "Htc", "Yplus", "HFLUX" }
+    "yValue": "PS/PT",
+
+    //not use
+    "ryValue": "",
+
+    //output image file path (.jpg)
+    "saveAs": ""
+}
