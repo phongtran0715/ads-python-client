@@ -33,6 +33,15 @@ class ExampleProject(str, Enum):
     row_3x_time_accurate = "3RowTimeAccurate"
 
 
+class AdvancedChartType(str, Enum):
+    csv = "csv"
+    load = "load"
+    forces = "forces"
+    meanvalue = "meanvalue"
+    mixedavg = "mixedavg"
+    overal = "overall"
+
+
 @project_app.command(name="create")
 def create_prj(
     name: str,
@@ -64,9 +73,9 @@ def list_prj(
 
 @project_app.command(name="run_multiple")
 def run_multiple(
-    check_foil: bool = typer.Option(True, "--check_foil", help="Enable foil"),
-    check_wand: bool = typer.Option(True, "--check_wand", help="Enable wand"),
-    check_leo: bool = typer.Option(True, "--check_leo", help="Enable leo"),
+    check_foil: bool = typer.Option(True, "--check-foil", help="Enable foil"),
+    check_wand: bool = typer.Option(True, "--check-wand", help="Enable wand"),
+    check_leo: bool = typer.Option(True, "--check-leo", help="Enable leo"),
     path: str = typer.Option(None, "--path", help="Path to excution project"),
     data: Optional[List[str]] = typer.Option(
         None, "--data", help="Path to case data"),
@@ -129,7 +138,7 @@ def delete_project(
 
 @queue_app.command(name="status")
 def queue_status(
-    path: str = typer.Option(None, "--path", help="Path to execution project"),
+    path: str = typer.Option(None, "--path", help="Project path to check queue status"),
 ) -> None:
     """Check queue status"""
     if path:
@@ -177,17 +186,17 @@ def queue_add(
 # =================== PLOT ===================
 @plot_app.command(name="add")
 def plot_add(
-    chartType: bool = typer.Option(True),
-    filePaths: str = typer.Option(
-        None, "--caseFilePath", help="Path to execution project"),
-    xValue: str = typer.Option(None, "--xValue"),
-    yValue: str = typer.Option(None, "--yValue"),
-    ryValue: str = typer.Option(None, "--ryValue"),
-    saveAs: str = typer.Option(None, "--saveAs"),
+    chart_type: AdvancedChartType = AdvancedChartType.load,
+    file_path: Optional[List[str]] = typer.Option(
+        None, "--file-path", help="Path to the chart files"),
+    xValue: str = typer.Option(None, "--x", help=("Series X value")),
+    yValue: str = typer.Option(None, "--y", help=("Series Y value")),
+    ryValue: str = typer.Option(None, "--ry", help=("Series RY value")),
+    saveAs: str = typer.Option(None, "--save-as", help=("Path file to export chart image")),
     file: Optional[Path] = typer.Option(
         None, help="Load configuration from json file")
 ) -> None:
-    """Display the .LOAD file in the advanced charting display"""
+    """Display an advanced chart"""
 
     cmd_content = ""
     if file:
@@ -195,14 +204,20 @@ def plot_add(
             f = open(file)
             cmd_content = json.dumps(json.load(f))
     else:
-        cmd_content = {
-            "chartType": chartType,
-            "filePaths": filePaths,
-            "xValue": xValue,
-            "yValue": yValue,
-            "ryValue": ryValue,
-            "saveAs": saveAs
-        }
+        if file_path:
+            cmd_content = {
+                "chartType": f".{chart_type}",
+                "filePaths": list(file_path),
+                "xValue": xValue if xValue else "X",
+                "yValue": yValue if yValue else "PS/PT",
+                "ryValue": ryValue,
+                "saveAs": saveAs
+            }
+        else:
+            typer.secho("Error! file_paths field can not be empty.",
+                        fg=typer.colors.RED)
+            return
+
 
     ads_command = "AdvChartPlotDump%s" % cmd_content
     return AdsCommand().send_cmd(ads_command)
